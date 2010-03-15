@@ -3,7 +3,7 @@ require 'rake'
 
 spec = Gem::Specification.new do |s|
   s.name = "genghis"
-  s.version = "1.0"
+  s.version = "1.0.1"
   s.author = "Steve Cohen"
   s.summary = "Genghis is a mongoDB configuration and resilience framework"
   s.email = "scohen@scohen.org"
@@ -13,6 +13,6 @@ spec = Gem::Specification.new do |s|
   s.require_path = "lib"
   s.autorequire = "genghis"
   s.has_rdoc = true
-  s.extra_rdoc_files = ["README"]
+  s.extra_rdoc_files = ["README.rdoc"]
   s.add_dependency("mongo", ">=0.19")
 end

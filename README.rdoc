@@ -94,7 +94,7 @@ I find the namespace Unsafe communicates my intention pretty well:
             key :bar, String
             key :baz, Integer
         end
-   end
+    end
 
 Then you need to need to enlist Genghis's guardian class, which is a protective object proxy.
     module Unsafe
