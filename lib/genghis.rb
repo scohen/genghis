@@ -5,8 +5,10 @@ class Genghis
   include Mongo
 
   def self.environment=(environment = :development)
+    base = File.dirname(__FILE__)
+    base = Rails.root if defined?(Rails)
 
-    config_file = File.join(File.dirname(__FILE__), '..', 'config', 'mongodb.yml')
+    config_file = File.join(base,'config', 'mongodb.yml')
     yaml = YAML.load_file(config_file)
     @@config = yaml[environment.to_s]
     @@config.each do |k, v|
