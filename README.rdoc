@@ -1,0 +1,125 @@
+= Genghis - a MongoDB configuration and resilience
+
+== What is Genghis?
+ * A configuration framework for mongoDB
+ * A resilience framework when using MongoDB in replica pairs
+
+== Getting started
+
+=== Configuration
+
+
+When invoked from rails, Genghis looks for a file called mongodb.yml in the RAILS_ROOT/config directory.
+the format of this file closely mimics that of the database.yml file you know well.
+
+       development:
+            servers: localhost:27017
+            databases:
+                paperclip : 'paperclip_files'
+                mongo_mapper : 'mongo_mapper'
+            connection_options:
+                pool_size: 7
+                timeout: 2
+
+In this case, we have a single mongodb server at localhost:2701. The database defines an alias for each
+actual mongo database in your mongodb server. You can then look up the databases by the alias later.
+The connection_options hash is passed directly to the mongo connection constructor.
+
+=== Paired configuration
+
+
+If you are using replica pairs, the configuration varies somewhat.
+
+    development:
+        servers:
+            left:  left_host:27017
+            right: right_host:27017
+        databases:
+            paperclip : 'paperclip_files'
+            ...
+        connection_options:
+            max_retries: 7
+            pool_size: 5
+            ...
+
+The left and right servers are specified in a hash, and most importantly for resilience the max_retries
+entry is specified in connection options. This specifies how many times Genghis will try to establish
+a connection to one of the servers if it detects a connection error.
+
+=== Initialization
+
+
+In rails, it's extremely simple to set up Genghis, simply include the gem  and then require it.
+Then set it up in environmnet.rb
+
+    Genghis.environment = RAILS_ENV
+
+Genghis manages connections so you don't have to. They are available through Genghis, so you can do
+the following:
+
+    MongoMapper.connection = Genghis.connection
+
+
+Database names can then be used to configure mongo mapper or any other frameworks you have
+
+    MongoMapper.database = Genghis.databases['mongo_mapper']
+
+
+== Resilience
+
+
+While MongoDB provides impressive levels of stability and failover, its driver design leaves failover
+up to the implementor. This leaves your application subject to connection exceptions that can happen
+at any time, possibly littering your code with ugly and difficult to maintain reconnect logic.
+Genghis's resilience framework solves this for you.
+
+=== Setup
+
+
+To make an object resilient, you must first have a replica pair of MongoDB servers. After you have
+that set up, you're ready to make your objects robust.
+
+The following examples will assume you have a mongo_mapper object with the following definition:
+
+    class Foo < MongoMapper::Document
+        key :bar, String
+        key :baz, Integer
+    end
+
+First you must re-define your old object so that the application can't see it under the original name.
+I find the namespace Unsafe communicates my intention pretty well:
+
+    module Unsafe
+        class Foo < MongoMapper::Document
+            key :bar, String
+            key :baz, Integer
+        end
+   end
+
+Then you need to need to enlist Genghis's guardian class, which is a protective object proxy.
+    module Unsafe
+        class Foo < MongoMapper::Document
+            key :bar, String
+            key :baz, Integer
+        end
+   end
+
+   class Foo < Genghis::Guardian
+      protects Unsafe::Foo
+   end
+
+That's it. You are now free to use the Foo class as you did before but now it has Genghis's guardian
+watching over its shoulder, protecting you from any connection related problems.
+
+
+=== What happens on error
+
+
+Let's say that while you are executing an update and a connection error occurs. Genghis's guardian
+realizes something has gone wrong and invalidates the current connection. It then tries to make a
+new connection to the other server in the replica pair. If that succeeds, it then re-tries the code
+that was executing when the failure occurs. It then keeps using this connection.
+
+If the second connection fails, it then reverts to the first server in the list. Genghis will flit
+back and forth between the two servers until it reaches the max_retries threshold, at which point
+it will raise an application level exception (the same type that was originally thrown).
