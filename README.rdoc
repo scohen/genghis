@@ -64,6 +64,11 @@ Database names can then be used to configure mongo mapper or any other framework
 
     MongoMapper.database = Genghis.databases['mongo_mapper']
 
+Similarly you can retrieve the actual mongo database
+
+    db = Genghis.database('paperclip')
+    db.collections
+    ...
 
 == Resilience
 
