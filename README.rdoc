@@ -1,8 +1,8 @@
 = Genghis - a MongoDB configuration and resilience
 
 == What is Genghis?
- * A configuration framework for mongoDB
- * A resilience framework when using MongoDB in replica pairs
+* A configuration framework for mongoDB
+* A resilience framework when using MongoDB in replica pairs
 
 == Getting started
 
