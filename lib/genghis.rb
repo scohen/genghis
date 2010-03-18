@@ -4,11 +4,12 @@ require 'mongo'
 class Genghis
   include Mongo
 
-  def self.environment=(environment = :development)
-    base = File.dirname(__FILE__)
-    base = Rails.root if defined?(Rails)
+  def self.config=(path)
+    puts "Setting config to #{path}"
+    @@config_file = path
+  end
 
-    config_file = File.join(base,'config', 'mongodb.yml')
+  def self.environment=(environment = :development)
     yaml = YAML.load_file(config_file)
     @@config = yaml[environment.to_s]
     @@config.each do |k, v|
@@ -31,6 +32,15 @@ class Genghis
   end
 
   private
+
+  def self.config_file
+    if defined? @@config_file
+      @@config_file
+    else
+      base = defined?(Rails) ? Rails.root : File.dirname(__FILE__)
+      File.join(base, 'config', 'mongodb.yml')
+    end
+  end
 
   def self.max_retries
     connection_options
