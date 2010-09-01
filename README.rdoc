@@ -25,10 +25,10 @@ In this case, we have a single mongodb server at localhost:2701. The database de
 actual mongo database in your mongodb server. You can then look up the databases by the alias later.
 The connection_options hash is passed directly to the mongo connection constructor.
 
-=== Paired configuration
+=== Replica configuration
 
 
-If you are using replica pairs, the configuration varies somewhat.
+If you are using replicas, the configuration varies somewhat.
 
     development:
         servers:
