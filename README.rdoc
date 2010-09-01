@@ -32,8 +32,8 @@ If you are using replica pairs, the configuration varies somewhat.
 
     development:
         servers:
-            left:  left_host:27017
-            right: right_host:27017
+            -_host:27017
+            - right_host:27017
         databases:
             paperclip : 'paperclip_files'
             ...
@@ -42,7 +42,7 @@ If you are using replica pairs, the configuration varies somewhat.
             pool_size: 5
             ...
 
-The left and right servers are specified in a hash, and most importantly for resilience the max_retries
+The servers are specified in an array, and most importantly for resilience the max_retries
 entry is specified in connection options. This specifies how many times Genghis will try to establish
 a connection to one of the servers if it detects a connection error.
 

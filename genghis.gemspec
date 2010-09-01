@@ -3,7 +3,7 @@ require 'rake'
 
 spec = Gem::Specification.new do |s|
   s.name = "genghis"
-  s.version = "1.0.2"
+  s.version = "1.0.4"
   s.author = "Steve Cohen"
   s.summary = "Genghis is a mongoDB configuration and resilience framework"
   s.email = "scohen@scohen.org"

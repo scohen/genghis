@@ -5,7 +5,6 @@ class Genghis
   include Mongo
 
   def self.config=(path)
-    puts "Setting config to #{path}"
     @@config_file = path
   end
 
@@ -24,7 +23,7 @@ class Genghis
   end
 
   def self.database(db_alias)
-    connection.db(self.databases[db_alias])
+    connection.db(self.databases[db_alias.to_s])
   end
 
   def self.reconnect
@@ -63,10 +62,11 @@ class Genghis
 
   def self.safe_create_connection
     opts = connection_options
-    if self.servers.is_a? Hash
-      servers = self.servers
-      servers = [parse_host(servers['left']), parse_host(servers['right'])]
-      connection = Connection.paired(servers, opts)
+    if self.servers.is_a? Array
+      servers = self.servers.collect{|x| parse_host(x)}
+      puts "Multi called with #{servers.inspect} #{opts.inspect}"
+
+      connection = Connection.multi(servers, opts)
     else
       host, port = parse_host(self.servers)
       connection = Connection.new(host, port, opts)
@@ -77,7 +77,7 @@ class Genghis
   def self.parse_host(host)
     a = host.split(':')
     a << 27017 if a.size == 1
-    a
+    [a.first, a.last.to_i]
   end
 
   def self.symbolize_keys(hash)
