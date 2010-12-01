@@ -2,18 +2,18 @@
 
 == What is Genghis?
 * A configuration framework for mongoDB
-* A resilience framework when using MongoDB in replica pairs
+* A resilience framework when using MongoDB in replica sets
 
 == Getting started
 
 === Configuration
-
+Genghis 1.2 is for use with MongoDB 1.6 or above; for MongoDB < 1.6, use Genghis 1.0.4
 
 When invoked from rails, Genghis looks for a file called mongodb.yml in the RAILS_ROOT/config directory.
 the format of this file closely mimics that of the database.yml file you know well.
 
        development:
-            servers: localhost:27017
+            server: mongodb://localhost
             databases:
                 paperclip : 'paperclip_files'
                 mongo_mapper : 'mongo_mapper'
@@ -21,21 +21,27 @@ the format of this file closely mimics that of the database.yml file you know we
                 pool_size: 7
                 timeout: 2
 
-In this case, we have a single mongodb server at localhost:2701. The database defines an alias for each
+In this case, we have a single mongodb server at localhost:27017. The database defines an alias for each
 actual mongo database in your mongodb server. You can then look up the databases by the alias later.
 The connection_options hash is passed directly to the mongo connection constructor.
 
-=== Replica configuration
+
+=== Replica Sets
 
 
-If you are using replicas, the configuration varies somewhat.
+If you are using replica sets, the configuration varies somewhat.
 
     development:
-        servers:
-            -_host:27017
-            - right_host:27017
+        replica_set:
+            - mongodb://replica1
+            - mongodb://replica2
         databases:
             paperclip : 'paperclip_files'
+            ...
+        authorization:
+            paperclip:
+                username: pc
+                password: secretpassword
             ...
         connection_options:
             max_retries: 7
@@ -63,6 +69,8 @@ the following:
 Database names can then be used to configure mongo mapper or any other frameworks you have
 
     MongoMapper.database = Genghis.databases['mongo_mapper']
+    or
+    MongoMapper.database = Genghis.database[:mongo_mapper]
 
 Similarly you can retrieve the actual mongo database
 
@@ -74,14 +82,14 @@ Similarly you can retrieve the actual mongo database
 
 
 While MongoDB provides impressive levels of stability and failover, its driver design leaves failover
-up to the implementor. This leaves your application subject to connection exceptions that can happen
+up to the implementer. This leaves your application subject to connection exceptions that can happen
 at any time, possibly littering your code with ugly and difficult to maintain reconnect logic.
 Genghis's resilience framework solves this for you.
 
 === Setup
 
 
-To make an object resilient, you must first have a replica pair of MongoDB servers. After you have
+To make an object resilient, you must first have a replica set of MongoDB servers. After you have
 that set up, you're ready to make your objects robust.
 
 The following examples will assume you have a mongo_mapper object with the following definition:
@@ -107,7 +115,7 @@ Then you need to need to enlist Genghis's guardian class, which is a protective 
             key :bar, String
             key :baz, Integer
         end
-   end
+    end
 
    class Foo < Genghis::Guardian
       protects Unsafe::Foo
@@ -122,7 +130,7 @@ watching over its shoulder, protecting you from any connection related problems.
 
 Let's say that while you are executing an update and a connection error occurs. Genghis's guardian
 realizes something has gone wrong and invalidates the current connection. It then tries to make a
-new connection to the other server in the replica pair. If that succeeds, it then re-tries the code
+new connection to the other server in the replica set. If that succeeds, it then re-tries the code
 that was executing when the failure occurs. It then keeps using this connection.
 
 If the second connection fails, it then reverts to the first server in the list. Genghis will flit
