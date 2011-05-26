@@ -44,9 +44,13 @@ If you are using replica sets, the configuration varies somewhat.
                 password: secretpassword
             ...
         connection_options:
-            max_retries: 7
             pool_size: 5
+            slave_ok: true
             ...
+        resilience_options:
+            max_retries: 7
+            sleep_between_retries: 0.5
+
 
 The servers are specified in an array, and most importantly for resilience the max_retries
 entry is specified in connection options. This specifies how many times Genghis will try to establish
@@ -81,7 +85,7 @@ Similarly you can retrieve the actual mongo database
 == Resilience
 
 
-While MongoDB provides impressive levels of stability and failover, its driver design leaves failover
+While MongoDB provides impressive levels of stability and failover, its driver design leaves handling failover
 up to the implementer. This leaves your application subject to connection exceptions that can happen
 at any time, possibly littering your code with ugly and difficult to maintain reconnect logic.
 Genghis's resilience framework solves this for you.
@@ -129,10 +133,10 @@ watching over its shoulder, protecting you from any connection related problems.
 
 
 Let's say that while you are executing an update and a connection error occurs. Genghis's guardian
-realizes something has gone wrong and invalidates the current connection. It then tries to make a
-new connection to the other server in the replica set. If that succeeds, it then re-tries the code
-that was executing when the failure occurs. It then keeps using this connection.
+realizes something has gone wrong and invalidates the current connection. It then waits sleep_between_retries
+seconds and then tries to make a new connection to the other server in the replica set. If that succeeds,
+it then re-tries the code that was executing when the failure occurs. It then keeps using this connection.
 
-If the second connection fails, it then reverts to the first server in the list. Genghis will flit
-back and forth between the two servers until it reaches the max_retries threshold, at which point
-it will raise an application level exception (the same type that was originally thrown).
+If the second connection fails, it then continues to the next server in the list. Genghis will cycle
+between the  servers until it reaches the max_retries threshold, at which point
+it will raise a Mongo::ConnectionFailure  exception (the same type that was originally thrown).

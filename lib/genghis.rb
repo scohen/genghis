@@ -26,6 +26,10 @@ class Genghis
         self.hosts = parse_mongo_urls([v])
       elsif k == 'replica_set'
         self.hosts = parse_mongo_urls(v)
+      elsif k == 'resilience_options'
+        v.each_pair do |opt, setting|
+          self.send("#{opt}=".to_sym, setting)
+        end
       else
         self.class.instance_eval do
           v = HashWithConsistentAccess.new(v) if v.is_a?(::Hash)
@@ -57,12 +61,26 @@ class Genghis
     @connection = safe_create_connection
   end
 
+  def self.max_retries=(num)
+    @@retries = num
+  end
+
+  def self.max_retries
+    @@retries ||= 5
+  end
+
+  def self.sleep_between_retries=(num)
+    @@sleep_time = num
+  end
+
+  def self.sleep_between_retries
+    @@sleep_time || 1
+  end
+
   private
 
   def self.parse_connection_options
     @@connection_options ||= symbolize_keys(default_connection_options.merge(@@config['connection_options']))
-    @@retries            ||= @@connection_options.delete(:max_retries)
-    @@connection_options
   end
 
   def self.parse_mongo_urls(urls)
@@ -85,30 +103,13 @@ class Genghis
     end
   end
 
-  def self.max_retries=(num)
-    @@retries = num
-  end
-
-  def self.max_retries
-    connection_options
-    @@retries ||= 5
-  end
-
-  def self.sleep_time=(num)
-    @@sleep_time = num
-  end
-
-  def self.sleep_time
-    @@sleep_time || 1
-  end
 
   def self.connection_options
     @@connection_options ||= parse_connection_options
   end
 
   def self.default_connection_options
-    {:max_retries => 5,
-     :pool_size   => 5,
+    { :pool_size   => 5,
      :timeout     => 5,
      :slave_ok    => false
     }
@@ -118,7 +119,12 @@ class Genghis
     opts = connection_options
     if self.hosts.size > 1
       servers    = self.hosts.collect { |x| [x[:host], x[:port]] }
-      connection = Connection.multi(servers, opts)
+      if defined?(Mongo::ReplSetConnection)
+        args = servers << opts
+        connection = Mongo::ReplSetConnection.new(*args)
+      else
+        connection = Connection.multi(servers, opts)
+      end
     else
       host       = self.hosts.first
       connection = Connection.new(host[:host], host[:port], opts)
@@ -208,7 +214,7 @@ class Genghis
             retries += 1
             raise ex if retries > max_retries
             fix_broken_connection
-            sleep(Genghis.sleep_time)
+            sleep(Genghis.sleep_between_retries)
           end
         end
         rv
