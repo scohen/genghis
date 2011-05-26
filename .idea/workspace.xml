@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2d62f355-b660-40cc-b934-627123268318" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/genghis.rb" afterPath="$PROJECT_DIR$/lib/genghis.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/config_spec.rb" afterPath="$PROJECT_DIR$/spec/config_spec.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/spec_helper.rb" afterPath="$PROJECT_DIR$/spec/spec_helper.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.rdoc" afterPath="$PROJECT_DIR$/README.rdoc" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/genghis.gemspec" afterPath="$PROJECT_DIR$/genghis.gemspec" />
     </list>
     <ignored path="genghis.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,10 +45,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config_spec.rb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="config_spec.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spec/config_spec.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="153" column="50" selection-start="5296" selection-end="5296" vertical-scroll-proportion="0.47191012">
+            <state line="153" column="50" selection-start="5296" selection-end="5296" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="genghis.gemspec" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/genghis.gemspec">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="20" selection-start="113" selection-end="113" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.rdoc" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.rdoc">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="57" column="121" selection-start="2019" selection-end="2019" vertical-scroll-proportion="0.49438202">
               <folding />
             </state>
           </provider>
@@ -95,11 +110,11 @@
         <option value="$PROJECT_DIR$/spec/genghis_rails_spec.rb" />
         <option value="$PROJECT_DIR$/spec/genghis_spec.rb" />
         <option value="$PROJECT_DIR$/spec/genghis_guardian_spec.rb" />
-        <option value="$PROJECT_DIR$/README.rdoc" />
-        <option value="$PROJECT_DIR$/genghis.gemspec" />
         <option value="$PROJECT_DIR$/spec/spec_helper.rb" />
         <option value="$PROJECT_DIR$/lib/genghis.rb" />
         <option value="$PROJECT_DIR$/spec/config_spec.rb" />
+        <option value="$PROJECT_DIR$/genghis.gemspec" />
+        <option value="$PROJECT_DIR$/README.rdoc" />
       </list>
     </option>
   </component>
@@ -358,20 +373,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/genghis.gemspec">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="20" selection-start="113" selection-end="113" vertical-scroll-proportion="0.056179777">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.rdoc">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="14" selection-start="1511" selection-end="1511" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spec/spec_helper.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="7" selection-start="213" selection-end="213" vertical-scroll-proportion="0.0">
@@ -388,7 +389,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/config_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="153" column="50" selection-start="5296" selection-end="5296" vertical-scroll-proportion="0.47191012">
+        <state line="153" column="50" selection-start="5296" selection-end="5296" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/genghis.gemspec">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="20" selection-start="113" selection-end="113" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.rdoc">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="57" column="121" selection-start="2019" selection-end="2019" vertical-scroll-proportion="0.49438202">
           <folding />
         </state>
       </provider>

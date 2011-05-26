@@ -55,6 +55,7 @@ If you are using replica sets, the configuration varies somewhat.
 The servers are specified in an array, and most importantly for resilience the max_retries
 entry is specified in connection options. This specifies how many times Genghis will try to establish
 a connection to one of the servers if it detects a connection error.
+Anything listed under connection options is passed to ReplSetConnection or Connection.multi as options after the servers.
 
 === Initialization
 
