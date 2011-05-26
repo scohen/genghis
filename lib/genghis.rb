@@ -80,7 +80,7 @@ class Genghis
   private
 
   def self.parse_connection_options
-    @@connection_options ||= symbolize_keys(default_connection_options.merge(@@config['connection_options']))
+    @@connection_options = symbolize_keys(default_connection_options.merge(@@config['connection_options']))
   end
 
   def self.parse_mongo_urls(urls)

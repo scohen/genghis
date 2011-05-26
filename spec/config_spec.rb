@@ -64,6 +64,7 @@ describe Genghis do
               :pool_size => 29,
               :slave_ok  => true}
       set_yaml_file('test' => {'connection_options' => opts})
+
       Genghis.environment = :test
       Genghis.connection_options.should == opts
     end
@@ -121,7 +122,7 @@ describe Genghis do
 
     end
 
-    context "replica set" do
+    context "replica with ReplSetConnection" do
       before do
         set_yaml_file('test' => {
             'replica_set' => [
@@ -133,6 +134,52 @@ describe Genghis do
         Genghis.environment=:test
         @conn              = mock(Mongo::Connection)
         @db                = mock(Mongo::DB)
+        @conn.stub(:db).and_return(@db)
+      end
+
+
+      it "should add auth to its databases" do
+        Mongo::ReplSetConnection.should_receive(:new).and_return(@conn)
+        @conn.should_receive(:apply_saved_authentication)
+        @conn.should_receive(:add_auth).with('test', 'foo', 'bar')
+        @conn.should_receive(:add_auth).with('mapped', 'foo', 'bar')
+        Genghis.database(:test).should == @db
+      end
+
+      context "after auth" do
+        before do
+          @conn.should_receive(:apply_saved_authentication)
+          @conn.should_receive(:add_auth).twice
+        end
+        it "should connect using ReplSetConnection" do
+          Mongo::ReplSetConnection.should_receive(:new).with(['localhost', 27017],
+                                                             ['remotehost', 27017],
+                                                             ['remotehost2', 12345],
+                                                             Genghis.connection_options).and_return(@conn)
+          Genghis.database(:test).should == @db
+        end
+      end
+
+
+    end
+
+    context "replica set pre ReplSetConnection" do
+      before do
+        set_yaml_file('test' => {
+            'replica_set' => [
+                'mongodb://foo:bar@localhost',
+                'mongodb://foo:bar@remotehost',
+                'mongodb://foo:bar@remotehost2:12345'
+            ]
+        })
+        Genghis.environment=:test
+        @conn              = mock(Mongo::Connection)
+        @db                = mock(Mongo::DB)
+
+        if defined?(Mongo::ReplSetConnection)
+          Mongo.send(:remove_const, "ReplSetConnection".to_sym)
+        end
+
         @conn.stub(:db).and_return(@db)
       end
 
